@@ -1,9 +1,9 @@
 import pickle
 import time
 
-import corpus_structure
-import query_structure
-import grammar_structure
+from .corpus_structure import Corpus
+from .query_structure import GrammarGraph
+from .grammar_structure import read_grammar_file
 import treetaggerwrapper
 
 '''
@@ -35,10 +35,10 @@ data about those collocations, so that later we can access it quickly.
 '''
 def parse_corpus(path_to_corpus,path_to_grammar,path_to_output,KPWr=False):
     print("Searching the corpus for all of the collocations")
-    grammar = grammar_structure.read_grammar_file(path_to_grammar)
+    grammar = read_grammar_file(path_to_grammar)
     start=time.time()
-    corpus = corpus_structure.Corpus(path_to_corpus, grammar, KPWr=KPWr)
-    corpus_representation = query_structure.GrammarGraph(grammar.find_all(corpus))
+    corpus = Corpus(path_to_corpus, grammar, KPWr=KPWr)
+    corpus_representation = GrammarGraph(grammar.find_all(corpus))
     pickle.dump(corpus_representation, open(path_to_output, "wb"))
     end=time.time()
     print("All of the collocations found and saved in "+str((end-start)/60)[0:str((end-start)/60).find(".")]+" minutes")

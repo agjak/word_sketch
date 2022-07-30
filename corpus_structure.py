@@ -1,9 +1,6 @@
 import re
-import sys
 from bs4 import BeautifulSoup
-import grammar_structure
-import math
-import query_structure
+from .query_structure import QueryGraph
 
 '''
 An object of this class holds information about a word in a corpus, its' lemma and tag, and allows for useful functions.
@@ -161,7 +158,7 @@ class Corpus:
     # This function searches through all of the corpus for the results of a query, and returns a QueryGraph with
     #those results.
     def search(self, query):
-        results=query_structure.QueryGraph()
+        results=QueryGraph()
         properties = query.properties
         amounts = query.amounts
         additional_rules=query.additional_rules
