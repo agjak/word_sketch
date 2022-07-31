@@ -1,5 +1,9 @@
 import pickle
 import time
+import nltk
+from nltk.stem import WordNetLemmatizer
+
+
 
 from .corpus_structure import Corpus
 from .query_structure import GrammarGraph
@@ -48,23 +52,38 @@ This function takes in a text file containing a list of paths of files comprisin
 text in those files, using Treetagger, and saves the tagged corpus in one text file.
 '''
 def tag_corpus(path_to_list_of_files,path_to_output,lang):
-    print("Tagging the corpus using Treetagger")
-    treetaggerwrapper.TAGGER_TIMEOUT = 1000
-    tagger = treetaggerwrapper.TreeTagger(TAGLANG=lang, TAGDIR='C:\\TreeTagger')
+    print("Tagging the corpus using nltk")
     list_of_files = open(path_to_list_of_files, "r")
     tagged_corpus=open(path_to_output, "w")
+    lemmatizer = WordNetLemmatizer()
     all=0
     bad=0
     for n in list_of_files:
         all=all+1
-        tagger.tag_file_to(n[:-1], "output.txt")
-        this_file=open("output.txt", "r")
+        this_file=open(n[:-1],"r")
         try:
+            text=""
             for line in this_file:
-                tagged_corpus.write(line)
+                line=line.strip()
+                text=text+" "+line
+                if text.find(". ")!=-1:
+                    sentence=text[0:text.find(". ")+1]
+                    text=text[text.find(". ")+1:]
+                    tokens=nltk.tokenize.word_tokenize(sentence)
+                    tags=nltk.pos_tag(tokens)
+                    for tag in tags:
+                        pos="n"
+                        if tag[1][0]=="V":
+                            pos="v"
+                        if tag[1][0]=="J":
+                            pos="a"
+                        if tag[1][0] == "R" and tag[1][1] == "B":
+                            pos = "r"
+                        tagged_corpus.write(tag[0]+"\t"+tag[1]+"\t"+lemmatizer.lemmatize(tag[0],pos)+"\n")
         except UnicodeDecodeError:
             bad=bad+1
         tagged_corpus.write("\n")
+
     print("Tagging done; tagged corpus saved.")
     if bad>0:
         print(str(bad)+"/"+str(all)+" files contained forbidden characters and could not be tagged.")
