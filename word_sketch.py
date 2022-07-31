@@ -102,7 +102,7 @@ def tag_constellate_corpus(constellate_id,path_to_output,lang):
     lemmatizer = WordNetLemmatizer()
     how_many_documents = 0
     description = constellate.get_description(constellate_id)
-    print(description['num_documents'])
+    how_many_documents=description['num_documents']
     for document in tqdm(constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz'),total=how_many_documents):
         text=document["fullText"][0]
         sentences=nltk.tokenize.sent_tokenize(text,lang)
