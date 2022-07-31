@@ -49,7 +49,7 @@ def parse_corpus(path_to_corpus,path_to_grammar,path_to_output,KPWr=False):
 
 '''
 This function takes in a text file containing a list of paths of files comprising a corpus. Then it tags the
-text in those files, using Treetagger, and saves the tagged corpus in one text file.
+text in those files, using nltk, and saves the tagged corpus in one text file.
 '''
 def tag_corpus(path_to_list_of_files,path_to_output,lang):
     print("Tagging the corpus using nltk")
@@ -87,3 +87,25 @@ def tag_corpus(path_to_list_of_files,path_to_output,lang):
     print("Tagging done; tagged corpus saved.")
     if bad>0:
         print(str(bad)+"/"+str(all)+" files contained forbidden characters and could not be tagged.")
+
+def tag_constellate_corpus(constellate_id,path_to_output,lang):
+    import constellate
+    print("Tagging a constellate corpus using nltk")
+    constellate.download("ec7e6e9c-501f-6f7d-d15b-46378a9284ef", 'jsonl')
+    tagged_corpus = open(path_to_output, "w")
+    lemmatizer = WordNetLemmatizer()
+    for document in constellate.dataset_reader('/root/data/ec7e6e9c-501f-6f7d-d15b-46378a9284ef-jsonl.jsonl.gz'):
+        text=document["fullText"][0]
+        sentences=nltk.tokenize.sent_tokenize(text,lang)
+        for sentence in sentences:
+            tokens = nltk.tokenize.word_tokenize(sentence)
+            tags = nltk.pos_tag(tokens)
+            for tag in tags:
+                pos = "n"
+                if tag[1][0] == "V":
+                    pos = "v"
+                if tag[1][0] == "J":
+                    pos = "a"
+                if tag[1][0] == "R" and tag[1][1] == "B":
+                    pos = "r"
+                tagged_corpus.write(tag[0] + "\t" + tag[1] + "\t" + lemmatizer.lemmatize(tag[0], pos) + "\n")
