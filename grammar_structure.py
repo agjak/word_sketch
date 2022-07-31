@@ -1,4 +1,5 @@
 import cqls
+from tqdm import tqdm
 
 from .grammar_edit import edit_grammar
 from .query_structure import Query
@@ -52,18 +53,21 @@ class Grammar:
                         j.writeout()
 
     def find_all(self, corpus):
+        print("Searching for collocations:")
         sketch = {}
+        how_many_collocations = len(self.collocations)
         if self.order == []:
-            for j in self.collocations:
+            for j in tqdm(self.collocations,total=how_many_collocations):
                 result = j.search(corpus)
                 if len(result.whole_coloc_amount) > 0:
                     sketch[j.name] = result
-        for i in self.order:
-            for j in self.collocations:
-                if j.name == i:
-                    result = j.search(corpus)
-                    if len(result.whole_coloc_amount) > 0:
-                        sketch[j.name] = result
+        else:
+            for i in tqdm(self.order,total=how_many_collocations):
+                for j in self.collocations:
+                    if j.name == i:
+                        result = j.search(corpus)
+                        if len(result.whole_coloc_amount) > 0:
+                            sketch[j.name] = result
         return sketch
 
 

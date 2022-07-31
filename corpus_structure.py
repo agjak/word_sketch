@@ -1,5 +1,7 @@
 import re
 from bs4 import BeautifulSoup
+from tqdm import tqdm
+
 from .query_structure import QueryGraph
 
 '''
@@ -95,6 +97,7 @@ a noun at the start, one of the types[] will be a list of all of the locations o
 '''
 class Corpus:
     def __init__(self,path,grammar,KPWr=False):
+        print("Reading the corpus:")
         self.words=[]
         self.types=[]
         self.types.append([])
@@ -120,6 +123,11 @@ class Corpus:
             word_num=0
             x = 0
             dashes_in_lemmas=True
+            how_many_words=0
+            for n in input:
+                how_many_words=how_many_words+1
+            input.close()
+            input = open(path, "r", encoding="UTF-8")
             for n in input:
                 if n[0] != "<":
                     x=x+1
@@ -127,7 +135,7 @@ class Corpus:
                         break
                     if n.find("-")==-1:
                         dashes_in_lemmas=False
-            for n in input:
+            for n in tqdm(input,total=how_many_words):
                 if n[0]!="<":
                     self.words.append(Word(n,dashes_in_lemmas))
                     self.types[0].append(word_num)

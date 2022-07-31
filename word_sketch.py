@@ -2,7 +2,7 @@ import pickle
 import time
 import nltk
 from nltk.stem import WordNetLemmatizer
-
+from tqdm import tqdm
 
 
 from .corpus_structure import Corpus
@@ -37,7 +37,6 @@ words in that corpus, according to that sketch grammar. Then it saves the object
 data about those collocations, so that later we can access it quickly.
 '''
 def parse_corpus(path_to_corpus,path_to_grammar,path_to_output,KPWr=False):
-    print("Searching the corpus for all of the collocations")
     grammar = read_grammar_file(path_to_grammar)
     start=time.time()
     corpus = Corpus(path_to_corpus, grammar, KPWr=KPWr)
@@ -57,7 +56,12 @@ def tag_corpus(path_to_list_of_files,path_to_output,lang):
     lemmatizer = WordNetLemmatizer()
     all=0
     bad=0
+    how_many_files=0
     for n in list_of_files:
+        how_many_files=how_many_files+1
+    list_of_files.close()
+    list_of_files = open(path_to_list_of_files, "r")
+    for n in tqdm(list_of_files,total=how_many_files):
         all=all+1
         this_file=open(n[:-1],"r")
         try:
@@ -87,13 +91,18 @@ def tag_corpus(path_to_list_of_files,path_to_output,lang):
     if bad>0:
         print(str(bad)+"/"+str(all)+" files contained forbidden characters and could not be tagged.")
 
+
+
 def tag_constellate_corpus(constellate_id,path_to_output,lang):
     import constellate
     print("Tagging a constellate corpus using nltk")
     constellate.download(constellate_id, 'jsonl')
     tagged_corpus = open(path_to_output, "w")
     lemmatizer = WordNetLemmatizer()
-    for document in constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz'):
+    how_many_documents = 0
+    for document in constellate.dataset_reader('/root/data/' + constellate_id + '-jsonl.jsonl.gz'):
+        how_many_documents=how_many_documents+1
+    for document in tqdm(constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz'),total=how_many_documents):
         text=document["fullText"][0]
         sentences=nltk.tokenize.sent_tokenize(text,lang)
         for sentence in sentences:
