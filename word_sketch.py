@@ -8,7 +8,6 @@ from nltk.stem import WordNetLemmatizer
 from .corpus_structure import Corpus
 from .query_structure import GrammarGraph
 from .grammar_structure import read_grammar_file
-import treetaggerwrapper
 
 '''
 This function writes out 'amount' of most common collocates of 'lemma', in every collocation type defined by
