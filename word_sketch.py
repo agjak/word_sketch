@@ -98,15 +98,10 @@ def tag_constellate_corpus(constellate_id,path_to_output,lang):
     import constellate
     print("Tagging a constellate corpus using nltk")
     constellate.download(constellate_id, 'jsonl')
-    constellate.download(constellate_id, "metadata")
     tagged_corpus = open(path_to_output, "w")
     lemmatizer = WordNetLemmatizer()
     how_many_documents = 0
-    metadata = open('/root/data/'+constellate_id+'-metadata.csv', "r")
-    for n in metadata:
-        how_many_documents=how_many_documents+1
-    metadata.close()
-    print(how_many_documents)
+    print(len(constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz')))
     for document in tqdm(constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz'),total=how_many_documents):
         text=document["fullText"][0]
         sentences=nltk.tokenize.sent_tokenize(text,lang)
