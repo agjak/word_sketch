@@ -90,10 +90,10 @@ def tag_corpus(path_to_list_of_files,path_to_output,lang):
 def tag_constellate_corpus(constellate_id,path_to_output,lang):
     import constellate
     print("Tagging a constellate corpus using nltk")
-    constellate.download("ec7e6e9c-501f-6f7d-d15b-46378a9284ef", 'jsonl')
+    constellate.download(constellate_id, 'jsonl')
     tagged_corpus = open(path_to_output, "w")
     lemmatizer = WordNetLemmatizer()
-    for document in constellate.dataset_reader('/root/data/ec7e6e9c-501f-6f7d-d15b-46378a9284ef-jsonl.jsonl.gz'):
+    for document in constellate.dataset_reader('/root/data/'+constellate_id+'-jsonl.jsonl.gz'):
         text=document["fullText"][0]
         sentences=nltk.tokenize.sent_tokenize(text,lang)
         for sentence in sentences:
